@@ -1,16 +1,13 @@
-# lab1-
-inf2 lab1 
 #include <stdio.h>
 #include <stdlib.h>
 #include <math.h>
 #include <time.h>
 
-// Definicje stałych zgodnie z poleceniem
-#define N 100 // Długość wektora (N <= 100)
-#define R 4   // Rząd filtru (R < 5)
+// Definicja stałej zgodnie z poleceniem
+#define N 100 // Długość wektora (N <= 100)[span_2](start_span)[span_2](end_span)
 
 // ---------------------------------------------------------
-// Zad. 1: Funkcja generująca sygnał sinusoidalny[cite: 1]
+// Zad. 1: Funkcja generująca sygnał sinusoidalny[span_3](start_span)[span_3](end_span)
 // ---------------------------------------------------------
 void SINUS(double wektor[], int n, double amplituda, double okres) {
     for (int i = 0; i < n; i++) {
@@ -19,10 +16,10 @@ void SINUS(double wektor[], int n, double amplituda, double okres) {
 }
 
 // ---------------------------------------------------------
-// Zad. 2: Funkcja generująca sygnał prostokątny[cite: 1]
+// Zad. 2: Funkcja generująca sygnał prostokątny[span_4](start_span)[span_4](end_span)
 // ---------------------------------------------------------
 void PROSTOKAT(double wektor[], int n, int T, int t0) {
-    if (t0 >= T) t0 = T - 1; // Zabezpieczenie przed błędem (t0 musi być < T)[cite: 1]
+    if (t0 >= T) t0 = T - 1; // Zabezpieczenie przed błędem (t0 musi być < T)[span_5](start_span)[span_5](end_span)
 
     for (int i = 0; i < n; i++) {
         if ((i % T) < t0) {
@@ -34,36 +31,19 @@ void PROSTOKAT(double wektor[], int n, int T, int t0) {
 }
 
 // ---------------------------------------------------------
-// Zad. 3: Funkcja dodająca szum z użyciem funkcji round[cite: 1]
+// Zad. 3: Funkcja dodająca szum i zachowująca czysty sygnał[span_6](start_span)[span_6](end_span)
 // ---------------------------------------------------------
-void DODAJ_SZUM(double wektor[], int n, double amplituda_szumu) {
+// Funkcja odczytuje wejscie, dodaje zokrąglony szum i zapisuje wynik do wyjscia
+void DODAJ_SZUM(const double wejscie[], double wyjscie[], int n, double amplituda_szumu) {
     for (int i = 0; i < n; i++) {
         // Wygenerowanie losowej wartości z przedziału [-1.0, 1.0]
         double znormalizowany_szum = ((double)rand() / RAND_MAX) * 2.0 - 1.0;
         
-        // Zaokrąglenie (da to -1.0, 0.0 lub 1.0) i przeskalowanie przez amplitudę
+        // Zaokrąglenie do całości i przeskalowanie przez amplitudę
         double szum = round(znormalizowany_szum) * amplituda_szumu;
         
-        // Dodanie szumu do pierwotnego wykresu
-        wektor[i] += szum;
-    }
-}
-
-// ---------------------------------------------------------
-// Zad. 4: Funkcja realizująca filtr uśredniający rzędu R[cite: 1]
-// ---------------------------------------------------------
-void FILTR_USREDNIAJACY(const double wejscie[], double wyjscie[], int n) {
-    for (int i = 0; i < n; i++) {
-        double suma = 0.0;
-        int licznik = 0;
-        
-        for (int j = 0; j < R; j++) {
-            if (i - j >= 0) { // Zabezpieczenie przed wyjściem poza początek tablicy
-                suma += wejscie[i - j];
-                licznik++;
-            }
-        }
-        wyjscie[i] = suma / licznik;
+        // Zapis do nowej tablicy (czysty sygnał + szum)
+        wyjscie[i] = wejscie[i] + szum;
     }
 }
 
@@ -71,41 +51,37 @@ void FILTR_USREDNIAJACY(const double wejscie[], double wyjscie[], int n) {
 // PROGRAM GŁÓWNY (MAIN)
 // ---------------------------------------------------------
 int main() {
-    // Inicjalizacja generatora liczb losowych dla szumu
+    // Inicjalizacja generatora liczb losowych
     srand(time(NULL)); 
 
-    // Deklaracja wektorów o zadanej długości N[cite: 1]
-    double sygnal_sin[N];
-    double sygnal_prost[N];
-    double filtr_sin[N];
-    double filtr_prost[N];
+    // Deklaracja wektorów o zadanej długości N[span_7](start_span)[span_7](end_span)
+    double czysty_sin[N];
+    double czysty_prost[N];
+    double zaszumiony_sin[N];
+    double zaszumiony_prost[N];
 
     // --- WYWOŁANIA FUNKCJI ---
 
     // ZAD. 1: Generowanie sinusa (Amplituda: 3.0, Okres: 20 próbek)
-    SINUS(sygnal_sin, N, 3.0, 20.0);
+    SINUS(czysty_sin, N, 3.0, 20.0);
 
     // ZAD. 2: Generowanie prostokąta (Okres: 20 próbek, Wypełnienie: 10 próbek)
-    PROSTOKAT(sygnal_prost, N, 20, 10);
+    PROSTOKAT(czysty_prost, N, 20, 10);
 
-    // ZAD. 3: Dodanie zaszumienia (Amplituda szumu: 0.8) do obu wektorów[cite: 1]
-    DODAJ_SZUM(sygnal_sin, N, 0.8);
-    DODAJ_SZUM(sygnal_prost, N, 0.8);
-
-    // ZAD. 4: Zastosowanie filtru uśredniającego i zapis wyników do nowych wektorów[cite: 1]
-    FILTR_USREDNIAJACY(sygnal_sin, filtr_sin, N);
-    FILTR_USREDNIAJACY(sygnal_prost, filtr_prost, N);
+    // ZAD. 3: Dodanie zaszumienia (Amplituda szumu: 0.8) do nowych wektorów[span_8](start_span)[span_8](end_span)
+    DODAJ_SZUM(czysty_sin, zaszumiony_sin, N, 0.8);
+    DODAJ_SZUM(czysty_prost, zaszumiony_prost, N, 0.8);
 
     // --- WYŚWIETLENIE WYNIKÓW ---
     // Wypisanie tabelaryczne do sprawdzenia wygenerowanych danych
-    printf("%-7s | %-15s | %-15s | %-15s | %-15s\n", 
-           "Probka", "Sin z szumem", "Sin po filtrze", "Prost z szumem", "Prost po filtrze");
-    printf("--------|-----------------|-----------------|-----------------|-----------------\n");
+    printf("%-7s | %-12s | %-15s | %-14s | %-15s\n", 
+           "Probka", "Czysty Sin", "Sin z szumem", "Czysty Prost", "Prost z szumem");
+    printf("--------|--------------|-----------------|----------------|-----------------\n");
     
-    // Pętla do N, czyli wyświetli całe 100 próbek[cite: 1]
-    for (int i = 0; i < N; i++) {
-        printf("%-7d | %-15.4f | %-15.4f | %-15.4f | %-15.4f\n",
-               i, sygnal_sin[i], filtr_sin[i], sygnal_prost[i], filtr_prost[i]);
+    // Pętla ograniczona do 25 próbek dla czytelności (można zmienić na N)
+    for (int i = 0; i < 25; i++) {
+        printf("%-7d | %-12.4f | %-15.4f | %-14.4f | %-15.4f\n",
+               i, czysty_sin[i], zaszumiony_sin[i], czysty_prost[i], zaszumiony_prost[i]);
     }
 
     return 0;

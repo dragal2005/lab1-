@@ -4,6 +4,7 @@
 #include <time.h>
 
 #define N 100
+#define R 4
 
 void SINUS(double wektor[], int n, double amplituda, double okres) {
     for (int i = 0; i < n; i++) {
@@ -30,47 +31,46 @@ void DODAJ_SZUM(const double wejscie[], double wyjscie[], int n, double amplitud
     }
 }
 
-void FILTR_USREDNIAJACY(const double wejscie[], double wejscie[], int n) {
+void FILTR_USREDNIAJACY(const double wejscie[], double wyjscie[], int n) {
     for (int i = 0; i < n; i++) {
-            double suma = 0.0;
-
-            for (int j = 0; j < r; j++ ) {
-                    if (i - j >= 0) {
-                        suma += wejscie[i - j];
-                    } else {
-                    suma += 0.0;
-                    }
-                }
-                wyjscie[i] = suma / R;
+        double suma = 0.0;
+        for (int j = 0; j < R; j++) {
+            if (i - j >= 0) {
+                suma += wejscie[i - j];
+            } else {
+                suma += 0.0;
             }
+        }
+        wyjscie[i] = suma / R;
+    }
 }
+
 int main() {
     srand(time(NULL));
 
-    double czysty_sin[N];
-    double czysty_prost[N];
-    double zaszumiony_sin[N];
-    double zaszumiony_prost[N];
-    double filtr_sin[N];
-    double filtr_prost[N];
+    double czysty_sin[N], czysty_prost[N];
+    double zaszumiony_sin[N], zaszumiony_prost[N];
+    double filtr1_sin[N], filtr2_sin[N];
+    double filtr1_prost[N], filtr2_prost[N];
 
     SINUS(czysty_sin, N, 3.0, 20.0);
-
     PROSTOKAT(czysty_prost, N, 20, 10);
 
     DODAJ_SZUM(czysty_sin, zaszumiony_sin, N, 0.8);
     DODAJ_SZUM(czysty_prost, zaszumiony_prost, N, 0.8);
 
-    FILTR_USREDNIAJACY(zaszumiony_sin, filtr_sin, N);
-    FILTR_USREDNIAJACY(zaszumiony_prost, filtr_prost, N);
+    FILTR_USREDNIAJACY(zaszumiony_sin, filtr1_sin, N);
+    FILTR_USREDNIAJACY(filtr1_sin, filtr2_sin, N);
 
-    printf("%-7s | %-12s | %-15s | %-14s | %-15s\n",
-           "Probka", "Czysty Sin", "Sin z szumem", "Sin filtr" "Czysty Prost", "Prost z szumem", "Prost filtr");
-    printf("--------|--------------|-----------------|----------------|-----------------|----------------|\n");
+    FILTR_USREDNIAJACY(zaszumiony_prost, filtr1_prost, N);
+    FILTR_USREDNIAJACY(filtr1_prost, filtr2_prost, N);
 
-    for (int i = 0; i < 25; i++) {
-        printf("%-7d | %-12.4f | %-15.4f | %-14.4f | %-15.4f\n",
-               i, czysty_sin[i], zaszumiony_sin[i], filtr_sin[i],czysty_prost[i], zaszumiony_prost[i], filtr_prost[i]);
+    printf("Probka\tCz_Sin\tSzum_Sin\tFiltr_Sin\tCz_Prost\tSzum_Prost\tFiltr_Prost\n");
+
+    for (int i = 0; i < N; i++) {
+        printf("%d\t%.4f\t%.4f\t\t%.4f\t\t%.4f\t\t%.4f\t\t%.4f\n",
+               i, czysty_sin[i], zaszumiony_sin[i], filtr2_sin[i],
+               czysty_prost[i], zaszumiony_prost[i], filtr2_prost[i]);
     }
 
     return 0;

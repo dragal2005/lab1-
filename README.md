@@ -6,12 +6,10 @@
 #define N 100
 #define R 4
 
-// Funkcja generująca sygnał sinusoidalny
 double CZYSTY_SIN(int i, double okres, double amplituda) {
     return amplituda * sin(2.0 * M_PI * i / okres);
 }
 
-// Funkcja generująca sygnał prostokątny
 double CZYSTY_PROST(int i, int okres, double amplituda, double wypelnienie) {
     int czas_w_okresie = i % okres;
     int prog_przelaczenia = (int)(okres * wypelnienie);
@@ -23,7 +21,6 @@ double CZYSTY_PROST(int i, int okres, double amplituda, double wypelnienie) {
     }
 }
 
-// Funkcja realizująca filtr kroczący uśredniający
 void FILTR_USREDNIAJACY(double wejscie[], double wyjscie[], int n) {
     for (int i = 0; i < n; i++) {
         double suma = 0.0;
@@ -31,7 +28,7 @@ void FILTR_USREDNIAJACY(double wejscie[], double wyjscie[], int n) {
             if (i - j >= 0) {
                 suma += wejscie[i - j];
             } else {
-                suma += 0.0; 
+                suma += 0.0;
             }
         }
         wyjscie[i] = suma / R;
@@ -39,14 +36,12 @@ void FILTR_USREDNIAJACY(double wejscie[], double wyjscie[], int n) {
 }
 
 int main() {
-    srand(time(NULL)); 
+    srand(time(NULL));
 
-    // --- ZMIENNE NA DANE Z KLAWIATURY ---
     double okres_sin, amp_sin;
     int okres_prost;
     double amp_prost, wyp_prost;
 
-    // --- POBIERANIE DANYCH OD UŻYTKOWNIKA ---
     printf("--- PARAMETRY SYGNALU SINUSOIDALNEGO ---\n");
     printf("Podaj okres (np. 20.0): ");
     scanf("%lf", &okres_sin);
@@ -62,27 +57,23 @@ int main() {
     scanf("%lf", &wyp_prost);
     printf("\nGenerowanie wynikow...\n\n");
 
-    // --- INICJALIZACJA TABLIC ---
     double czysty_sin[N], czysty_prost[N];
     double zaszumiony_sin[N], zaszumiony_prost[N];
     double filtr1_sin[N], filtr1_prost[N];
 
-    // --- GENEROWANIE SYGNALOW ---
     for (int i = 0; i < N; i++) {
         czysty_sin[i] = CZYSTY_SIN(i, okres_sin, amp_sin);
         czysty_prost[i] = CZYSTY_PROST(i, okres_prost, amp_prost, wyp_prost);
 
         double szum = ( (rand() / (double)RAND_MAX) * 2.0 - 1.0 );
-        
+
         zaszumiony_sin[i] = czysty_sin[i] + szum;
         zaszumiony_prost[i] = czysty_prost[i] + szum;
     }
 
-    // --- JEDNOKROTNA FILTRACJA ---
     FILTR_USREDNIAJACY(zaszumiony_sin, filtr1_sin, N);
     FILTR_USREDNIAJACY(zaszumiony_prost, filtr1_prost, N);
 
-    // --- WYPISYWANIE WYNIKOW ---
     printf("Probka\tCz_Sin\tSzum_Sin\tFiltr_Sin\tCz_Prost\tSzum_Prost\tFiltr_Prost\n");
 
     for (int i = 0; i < N; i++) {
@@ -95,7 +86,6 @@ int main() {
                zaszumiony_prost[i],
                filtr1_prost[i]);
     }
-
-    system("pause");
     return 0;
 }
+

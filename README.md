@@ -42,30 +42,30 @@ int main() {
     int okres_prost;
     double amp_prost, wyp_prost;
 
-    printf("--- PARAMETRY SYGNALU SINUSOIDALNEGO ---\n");
-    printf("Podaj okres (np. 20.0): ");
+    printf(" PARAMETRY SYGNALU SINUSOIDALNEGO \n");
+    printf("Podaj okres : ");
     scanf("%lf", &okres_sin);
-    printf("Podaj amplitude (np. 1.0): ");
+    printf("Podaj amplitude: ");
     scanf("%lf", &amp_sin);
 
-    printf("\n--- PARAMETRY SYGNALU PROSTOKATNEGO ---\n");
-    printf("Podaj okres (liczba calkowita, np. 20): ");
+    printf("\n PARAMETRY SYGNALU PROSTOKATNEGO \n");
+    printf("Podaj okres : ");
     scanf("%d", &okres_prost);
-    printf("Podaj amplitude (np. 1.0): ");
+    printf("Podaj amplitude : ");
     scanf("%lf", &amp_prost);
-    printf("Podaj wypelnienie (od 0.0 do 1.0, np. 0.5): ");
+    printf("Podaj wypelnienie : ");
     scanf("%lf", &wyp_prost);
     printf("\nGenerowanie wynikow...\n\n");
 
     double czysty_sin[N], czysty_prost[N];
     double zaszumiony_sin[N], zaszumiony_prost[N];
     double filtr1_sin[N], filtr1_prost[N];
-
+    double ampl_szumu = 0.1;
     for (int i = 0; i < N; i++) {
         czysty_sin[i] = CZYSTY_SIN(i, okres_sin, amp_sin);
         czysty_prost[i] = CZYSTY_PROST(i, okres_prost, amp_prost, wyp_prost);
 
-        double szum = ( (rand() / (double)RAND_MAX) * 2.0 - 1.0 );
+        double szum = ( (rand() / (double)RAND_MAX) *2.0 - 1.0 )*ampl_szumu;
 
         zaszumiony_sin[i] = czysty_sin[i] + szum;
         zaszumiony_prost[i] = czysty_prost[i] + szum;
